@@ -13,7 +13,7 @@ def client():
 
 def test_get_root(client):
     response = client.simulate_get('/')
-    assert response.status == falcon.HTTP_NO_CONTENT
+    assert response.status == falcon.HTTP_NOT_FOUND
 
 def test_get_spots(client):
     response = client.simulate_get('/spots')
