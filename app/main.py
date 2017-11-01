@@ -1,8 +1,8 @@
 # coding:utf-8
 import falcon
 
-from .root import Root
-from .spots import Spot
+from app.root import Root
+from app.spots import Spot
 
 api = application = falcon.API()
 root = Root()
