@@ -3,12 +3,12 @@ import falcon
 from falcon import testing
 import pytest
 
-from app.main import api
+from app.main import create_api
 
 
 @pytest.fixture
 def client():
-    return testing.TestClient(api)
+    return testing.TestClient(create_api())
 
 
 def test_get_spots(client):
