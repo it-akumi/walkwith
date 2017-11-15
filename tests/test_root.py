@@ -13,5 +13,5 @@ def client():
 
 def test_get_root(client):
     response = client.simulate_get('/')
-    assert response.headers['content-type'] == 'text/html; charset=utf-8'
+    assert response.headers['content-type'] == falcon.MEDIA_HTML
     assert response.status == falcon.HTTP_OK

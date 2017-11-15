@@ -13,6 +13,7 @@ def client():
 
 def test_get_spots(client):
     response = client.simulate_get('/spots')
+    assert response.headers['content-type'] == falcon.MEDIA_JSON
     assert response.status == falcon.HTTP_OK
 
 
