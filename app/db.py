@@ -38,8 +38,7 @@ class Spots(Base):
     spot_id = Column(Integer, primary_key=True,
                      autoincrement=False)
     created_at = Column(DateTime)
-    updated_at = Column(DateTime)
-    name = Column(Unicode(20))
-    latitude = Column(Float)
-    longitude = Column(Float)
+    name = Column(Unicode(20), nullable=False)
+    latitude = Column(Float, nullable=False)
+    longitude = Column(Float, nullable=False)
     guide = Column(Unicode(100))
