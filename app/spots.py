@@ -1,14 +1,15 @@
 # coding:utf-8
 import falcon
+
 from sqlalchemy.orm import sessionmaker
 
-from app.db import engine
+from app.db import init_db
 
 
 class Spot():
     def __init__(self):
         """Create session (interface for DB)."""
-        Session = sessionmaker(bind=engine)
+        Session = sessionmaker(bind=init_db())
         self.session = Session()
 
     def on_get(self, req, resp):
