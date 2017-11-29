@@ -1,5 +1,6 @@
 # coding:utf-8
 import os
+from datetime import datetime
 
 from sqlalchemy import (Column, DateTime, Float, Integer,
                         Unicode, create_engine)
@@ -40,11 +41,11 @@ def init_db():
 
 
 class Spots(Base):
-    __tablename__ = 'spots'
+    """Definition of table of spots."""
 
-    spot_id = Column(Integer, primary_key=True,
-                     autoincrement=False)
-    created_at = Column(DateTime)
+    __tablename__ = 'spots'
+    spot_id = Column(Integer, primary_key=True)
+    created_at = Column(DateTime, default=datetime.now)
     name = Column(Unicode(20), nullable=False)
     latitude = Column(Float, nullable=False)
     longitude = Column(Float, nullable=False)
