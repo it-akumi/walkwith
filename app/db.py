@@ -11,7 +11,7 @@ Base = declarative_base()
 
 
 def init_db():
-    """Create engine and DB."""
+    """Create engine and table."""
     database_tpl = 'postgresql://{user}:{password}@{host}:{port}/{dbname}'
 
     if os.getenv('HEROKU'):
