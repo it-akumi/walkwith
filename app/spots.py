@@ -32,8 +32,8 @@ class AllSpots(Spot):
 
     def on_post(self, req, resp):
         """Create new spot and return its location."""
-        sent_params = json.loads(req.stream.read())
-        new_spot = Spots(**sent_params)
+        recieved_params = json.loads(req.stream.read())
+        new_spot = Spots(**recieved_params)
         self._session.add(new_spot)
         self._session.commit()
 
