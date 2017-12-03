@@ -32,6 +32,12 @@ class AllSpots(Spot):
 
     def on_post(self, req, resp):
         """Create new spot and return its location."""
+        sent_params = json.loads(req.stream.read())
+        new_spot = Spots(**sent_params)
+        self._session.add(new_spot)
+        self._session.commit()
+
+        resp.location = '/spots/{}'.format(new_spot.spot_id)
         resp.status = falcon.HTTP_CREATED
 
 
@@ -44,7 +50,7 @@ class SingleSpot(Spot):
             resp.status = falcon.HTTP_NOT_FOUND
         else:
             body = {attr: spot.__dict__[attr]
-                for attr in self._attr}
+                    for attr in self._attr}
             resp.body = json.dumps(body)
             resp.content_type = falcon.MEDIA_JSON
             resp.status = falcon.HTTP_OK
