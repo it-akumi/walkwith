@@ -2,17 +2,14 @@
 import json
 
 import falcon
-from sqlalchemy.orm import sessionmaker
 
 from app.db import Spots
-from app.db import init_db
 
 
 class Spot():
-    def __init__(self):
+    def __init__(self, session):
         """Set session and attributes of spot."""
-        Session = sessionmaker(bind=init_db())
-        self._session = Session()
+        self._session = session
         self._attr = ['name', 'latitude', 'longitude', 'guide']
 
 
