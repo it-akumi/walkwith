@@ -5,40 +5,41 @@ import os
 import falcon
 from falcon import testing
 import pytest
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 
 from app.db import Base
-from app.db import DB
 from app.main import create_api
 
 
-@pytest.fixture(scope='session')
-def db():
-    os.environ['PG_USER'] = os.getenv('PG_TEST_USER', '')
-    os.environ['PG_PASSWORD'] = os.getenv('PG_TEST_PASSWORD', '')
-    os.environ['PG_HOST'] = os.getenv('PG_TEST_HOST', '')
-    os.environ['PG_PORT'] = os.getenv('PG_TEST_PORT', '')
-    os.environ['PG_DBNAME'] = os.getenv('PG_TEST_DBNAME', '')
+def database():
+    """Create database url."""
+    database_tpl = 'postgresql://{user}:{password}@{host}:{port}/{dbname}'
 
-    db = DB()
-    return db
+    database = database_tpl.format(
+        user=os.getenv('PG_TEST_USER', ''),
+        password=os.getenv('PG_TEST_PASSWORD', ''),
+        host=os.getenv('PG_TEST_HOST', ''),
+        port=os.getenv('PG_TEST_PORT', ''),
+        dbname=os.getenv('PG_TEST_DBNAME', '')
+    )
+
+    return database
 
 
-@pytest.fixture(scope='session')
-def db_table(request, db):
-    Base.metadata.create_all(bind=db.engine)
+@pytest.fixture(scope='module')
+def client(request):
+    engine = create_engine(database())
+    Base.metadata.create_all(bind=engine)
+    session = sessionmaker(bind=engine)()
 
     def teardown():
-        Base.metadata.drop_all(bind=db.engine)
+        session.close()
+        Base.metadata.drop_all(bind=engine)
 
-    # request.addfinalizer(teardown)
+    request.addfinalizer(teardown)
 
-
-@pytest.fixture
-def client():
-    return testing.TestClient(create_api())
-
-
-pytestmark = pytest.mark.usefixtures('db_table')
+    return testing.TestClient(create_api(session))
 
 
 def test_get_all_spots(client):
