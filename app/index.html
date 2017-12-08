@@ -10,6 +10,15 @@
     <body>
         <h1>walkwith test</h1>
         <div id="map"></div>
+        <form action="/spots/" method="post">
+            名称:<input type="text" name="name" size=20>
+            緯度:<input type="number" name="latitude" step=0.000001>
+            経度:<input type="number" name="longitude" step=0.000001>
+            解説:<input type="textarea" name="guide" size=100>
+            <br>
+            <input type="submit" value="登録">
+            <input type="reset" value="リセット">
+        </form>
 
         <script src="https://maps.googleapis.com/maps/api/js"></script>
 

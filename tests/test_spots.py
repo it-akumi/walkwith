@@ -1,4 +1,5 @@
 # coding:utf-8
+"""Tests for Spot resources."""
 import json
 
 import falcon

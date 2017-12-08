@@ -1,4 +1,6 @@
 # coding:utf-8
+"""Fixtures in this file will be shared among all tests."""
+
 import os
 
 from falcon import testing
@@ -10,6 +12,7 @@ from app.db import Base
 from app.main import create_api
 
 
+@pytest.fixture(scope='module')
 def database():
     """Create database url."""
     database_tpl = 'postgresql://{user}:{password}@{host}:{port}/{dbname}'
@@ -26,8 +29,9 @@ def database():
 
 
 @pytest.fixture(scope='module')
-def client(request):
-    engine = create_engine(database())
+def client(request, database):
+    """Initialize DB and Create api."""
+    engine = create_engine(database)
     Base.metadata.create_all(bind=engine)
     session = sessionmaker(bind=engine)()
 
