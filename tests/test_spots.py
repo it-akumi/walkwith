@@ -14,12 +14,7 @@ def test_get_all_spots(client):
 
 
 def test_post_spot(client):
-    params = b'''{
-        "name": "test spot",
-        "latitude": 35.658581,
-        "longitude": 139.745433,
-        "guide": "Try to create new spot."
-    }'''
+    params = json.dumps({"name": "test spot", "latitude": 35.658581, "longitude": 139.745433, "guide": "Try to create new spot."})
     response = client.simulate_post('/spots', body=params)
     assert response.headers['location'] == '/spots/1'
     assert response.status == falcon.HTTP_CREATED
