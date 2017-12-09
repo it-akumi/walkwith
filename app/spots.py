@@ -2,6 +2,7 @@
 import json
 
 import falcon
+import sqlalchemy
 
 from app.db import Spots
 
@@ -10,6 +11,7 @@ class Spot():
     def __init__(self, session):
         """Set session and attributes of spot."""
         self._session = session
+        # Request and response includes these attributes
         self._attr = ['name', 'latitude', 'longitude', 'guide']
 
 
@@ -32,7 +34,13 @@ class AllSpots(Spot):
         recieved_params = json.loads(req.stream.read())
         new_spot = Spots(**recieved_params)
         self._session.add(new_spot)
-        self._session.commit()
+
+        try:
+            self._session.commit()
+        except sqlalchemy.exc.IntegrityError:
+            # If required parameter doesn't exist
+            self._session.rollback()
+            raise falcon.HTTPBadRequest
 
         resp.location = '/spots/{}'.format(new_spot.spot_id)
         resp.status = falcon.HTTP_CREATED
@@ -43,8 +51,7 @@ class SingleSpot(Spot):
         """Return attributes of spot in the form of json."""
         spot = self._session.query(Spots).get(spot_id)
         if spot is None:
-            resp.body = 'Sorry, Resource Not Found.'
-            resp.status = falcon.HTTP_NOT_FOUND
+            raise falcon.HTTPNotFound()
         else:
             body = {attr: spot.__dict__[attr]
                     for attr in self._attr}
