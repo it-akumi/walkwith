@@ -37,3 +37,13 @@ def test_get_existing_spot(client):
     assert response.headers['content-type'] == falcon.MEDIA_JSON
     assert response.content == spot
     assert response.status == falcon.HTTP_OK
+
+
+def test_delete_existing_spot(client):
+    response = client.simulate_delete('/spots/1')
+    assert response.status == falcon.HTTP_NO_CONTENT
+
+
+def test_delete_non_existing_spot(client):
+    response = client.simulate_delete('/spots/0')
+    assert response.status == falcon.HTTP_NOT_FOUND
