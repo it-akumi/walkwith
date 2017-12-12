@@ -4,6 +4,6 @@ import falcon
 
 
 def test_get_root(client):
+    """Check if 'GET /' is redirected to 'GET /index.html'"""
     response = client.simulate_get('/')
-    assert response.headers['content-type'] == falcon.MEDIA_HTML
-    assert response.status == falcon.HTTP_OK
+    assert response.status == falcon.HTTP_MOVED_PERMANENTLY
