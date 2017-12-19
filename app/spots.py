@@ -51,7 +51,7 @@ class SingleSpot(Spot):
         """Return attributes of spot in the form of json."""
         spot = self._session.query(Spots).get(spot_id)
         if spot is None:
-            raise falcon.HTTPNotFound()
+            raise falcon.HTTPNotFound
         else:
             body = {attr: spot.__dict__[attr]
                     for attr in self._attr}
