@@ -63,7 +63,7 @@ class SingleSpot(Spot):
         """Delete requested spot."""
         spot = self._session.query(Spots).get(spot_id)
         if spot is None:
-            raise falcon.HTTPNotFound()
+            raise falcon.HTTPNotFound
         else:
             self._session.delete(spot)
             self._session.commit()
