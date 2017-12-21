@@ -4,6 +4,7 @@ import json
 import falcon
 import sqlalchemy
 
+from app.auth import authorize
 from app.db import Spots
 
 
@@ -59,6 +60,7 @@ class SingleSpot(Spot):
             resp.content_type = falcon.MEDIA_JSON
             resp.status = falcon.HTTP_OK
 
+    @falcon.before(authorize)
     def on_delete(self, req, resp, spot_id):
         """Delete requested spot."""
         spot = self._session.query(Spots).get(spot_id)
