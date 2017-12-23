@@ -45,6 +45,15 @@ def test_delete_spot_without_auth(client):
     # Really means "unauthenticated"
 
 
+def test_delete_spot_with_invalid_token(client):
+    response = client.simulate_delete(
+        '/spots/1',
+        headers={'Authorization': 'invalid_token'}
+    )
+    assert response.status == falcon.HTTP_FORBIDDEN
+    # Really means "unauthorized"
+
+
 def test_delete_existing_spot(client):
     response = client.simulate_delete('/spots/1')
     assert response.status == falcon.HTTP_NO_CONTENT
