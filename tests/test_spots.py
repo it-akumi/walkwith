@@ -41,7 +41,8 @@ def test_get_existing_spot(client):
 
 def test_delete_spot_without_auth(client):
     response = client.simulate_delete('/spots/1')
-    assert response.status == falcon.HTTP_FORBIDDEN
+    assert response.status == falcon.HTTP_UNAUTHORIZED
+    # Really means "unauthenticated"
 
 
 def test_delete_existing_spot(client):
