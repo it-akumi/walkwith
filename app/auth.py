@@ -1,4 +1,5 @@
 # coding:utf-8
+import os
 import falcon
 
 
@@ -23,4 +24,7 @@ def authorize(req, resp, _):
 
 def token_is_valid(token):
     """Check if authorization token is valid."""
-    return True
+    if token == os.getenv('AUTH_TOKEN'):
+        return True
+    else:
+        return False
