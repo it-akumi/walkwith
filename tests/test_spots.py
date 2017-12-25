@@ -1,6 +1,7 @@
 # coding:utf-8
 """Tests for Spot resources."""
 import json
+import os
 
 import falcon
 
@@ -55,10 +56,16 @@ def test_delete_spot_with_invalid_token(client):
 
 
 def test_delete_existing_spot(client):
-    response = client.simulate_delete('/spots/1')
+    response = client.simulate_delete(
+        '/spots/1',
+        headers={'Authorization': os.getenv('AUTH_TOKEN')}
+    )
     assert response.status == falcon.HTTP_NO_CONTENT
 
 
 def test_delete_non_existing_spot(client):
-    response = client.simulate_delete('/spots/0')
+    response = client.simulate_delete(
+        '/spots/0',
+        headers={'Authorization': os.getenv('AUTH_TOKEN')}
+    )
     assert response.status == falcon.HTTP_NOT_FOUND
