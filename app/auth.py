@@ -16,7 +16,7 @@ def authorize(req, resp, _):
 
     if not token_is_valid(token):
         description = 'The provided auth token is not valid.'
-        raise falcon.HTTPUnauthorized(
+        raise falcon.HTTPForbidden(
             'Authorization required',
             description
         )
