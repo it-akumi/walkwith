@@ -10,7 +10,7 @@ from app.db import Spots
 
 class Spot():
     def __init__(self, session):
-        """Set session and attributes of spot."""
+        """Set db session and attributes of spot."""
         self._session = session
         # Request and response includes these attributes
         self._attr = ['name', 'latitude', 'longitude', 'guide']
@@ -33,9 +33,13 @@ class AllSpots(Spot):
     def on_post(self, req, resp):
         """Create new spot and return its location."""
         recieved_params = json.loads(req.stream.read())
-        new_spot = Spots(**recieved_params)
-        self._session.add(new_spot)
+        try:
+            new_spot = Spots(**recieved_params)
+        except TypeError:
+            # If recieved invalid params
+            raise falcon.HTTPBadRequest
 
+        self._session.add(new_spot)
         try:
             self._session.commit()
         except sqlalchemy.exc.IntegrityError:
