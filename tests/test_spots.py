@@ -15,14 +15,23 @@ def test_get_all_spots(client):
 
 
 def test_post_spot_with_required_params(client):
-    params = json.dumps({"name": "test spot", "latitude": 35.658581, "longitude": 139.745433, "guide": "Possible to create new spot with required params."})
+    """Possible to create new spot with required params."""
+    params = json.dumps({"name": "test spot", "latitude": 35.658581, "longitude": 139.745433, "guide": "This is a test."})
     response = client.simulate_post('/spots', body=params)
     assert response.headers['location'] == '/spots/1'
     assert response.status == falcon.HTTP_CREATED
 
 
 def test_post_spot_with_missing_params(client):
-    params = json.dumps({"name": "test spot", "latitude": 35.658581, "guide": "Unable to create new spot because of missing longitude."})
+    """Unable to create new spot because of missing longitude."""
+    params = json.dumps({"name": "test spot", "latitude": 35.658581, "guide": "This is a test."})
+    response = client.simulate_post('/spots', body=params)
+    assert response.status == falcon.HTTP_BAD_REQUEST
+
+
+def test_post_spot_with_undefined_params(client):
+    """Unable to create new spot because of undefined params."""
+    params = json.dumps({"hoge": "fuga"})
     response = client.simulate_post('/spots', body=params)
     assert response.status == falcon.HTTP_BAD_REQUEST
 
@@ -34,7 +43,7 @@ def test_get_non_existing_spot(client):
 
 def test_get_existing_spot(client):
     response = client.simulate_get('/spots/1')
-    spot = b'{"name": "test spot", "latitude": 35.658581, "longitude": 139.745433, "guide": "Possible to create new spot with required params."}'
+    spot = b'{"name": "test spot", "latitude": 35.658581, "longitude": 139.745433, "guide": "This is a test."}'
     assert response.headers['content-type'] == falcon.MEDIA_JSON
     assert response.content == spot
     assert response.status == falcon.HTTP_OK
