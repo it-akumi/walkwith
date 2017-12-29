@@ -36,7 +36,7 @@ class AllSpots(Spot):
         try:
             new_spot = Spots(**recieved_params)
         except TypeError:
-            # If recieved invalid params
+            # If recieved undefined params
             raise falcon.HTTPBadRequest
 
         self._session.add(new_spot)
@@ -44,6 +44,10 @@ class AllSpots(Spot):
             self._session.commit()
         except sqlalchemy.exc.IntegrityError:
             # If required parameter doesn't exist
+            self._session.rollback()
+            raise falcon.HTTPBadRequest
+        except sqlalchemy.exc.DataError:
+            # If recieved invalid params
             self._session.rollback()
             raise falcon.HTTPBadRequest
 
