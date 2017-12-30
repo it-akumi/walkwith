@@ -29,6 +29,13 @@ def test_post_spot_with_missing_params(client):
     assert response.status == falcon.HTTP_BAD_REQUEST
 
 
+def test_post_spot_with_invalid_params(client):
+    """Unable to create new spot because name is too long."""
+    params = json.dumps({"name": "This name is too long", "latitude": 35.658581, "longitude": 139.745433, "guide": "This is a test."})
+    response = client.simulate_post('/spots', body=params)
+    assert response.status == falcon.HTTP_BAD_REQUEST
+
+
 def test_post_spot_with_undefined_params(client):
     """Unable to create new spot because of undefined params."""
     params = json.dumps({"hoge": "fuga"})
