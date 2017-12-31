@@ -30,26 +30,38 @@ class AllSpots(Spot):
         resp.content_type = falcon.MEDIA_JSON
         resp.status = falcon.HTTP_OK
 
+
+    def validate(self, recieved_params):
+        """Validate recieved parameters."""
+        # If recieved undefined params
+        for k in recieved_params.keys():
+            if k not in self._attr:
+                msg = 'You post undefined parameter.'
+                raise falcon.HTTPInvalidParam(msg, k)
+
+        # If required parameter doesn't exist
+        required = ['name', 'latitude', 'longitude']
+        for r in required:
+            if r not in recieved_params.keys():
+                raise falcon.HTTPMissingParam(r)
+
+        # If recieved invalid params
+        if len(recieved_params['name']) > 20:
+            msg = 'name must be within 20 characters.'
+            raise falcon.HTTPInvalidParam(msg, 'name')
+        if len(recieved_params['guide']) > 100:
+            msg = 'guide must be within 100 characters.'
+            raise falcon.HTTPInvalidParam(msg, 'guide')
+
+
     def on_post(self, req, resp):
         """Create new spot and return its location."""
         recieved_params = json.loads(req.stream.read())
-        try:
-            new_spot = Spots(**recieved_params)
-        except TypeError:
-            # If recieved undefined params
-            raise falcon.HTTPBadRequest
+        self.validate(recieved_params)
 
+        new_spot = Spots(**recieved_params)
         self._session.add(new_spot)
-        try:
-            self._session.commit()
-        except sqlalchemy.exc.IntegrityError:
-            # If required parameter doesn't exist
-            self._session.rollback()
-            raise falcon.HTTPBadRequest
-        except sqlalchemy.exc.DataError:
-            # If recieved invalid params
-            self._session.rollback()
-            raise falcon.HTTPBadRequest
+        self._session.commit()
 
         resp.location = '/spots/{}'.format(new_spot.spot_id)
         resp.status = falcon.HTTP_CREATED
