@@ -2,7 +2,7 @@
 import json
 
 import falcon
-import sqlalchemy
+import jsonschema
 
 from app.auth import authorize
 from app.db import Spots
@@ -30,29 +30,39 @@ class AllSpots(Spot):
         resp.content_type = falcon.MEDIA_JSON
         resp.status = falcon.HTTP_OK
 
+    def validate(self, recieved_json):
+        """Validate recieved json using jsonschema."""
+        schema = {
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 20
+                },
+                "latitude": {
+                    "type": "number"
+                },
+                "longitude": {
+                    "type": "number"
+                },
+                "guide": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 100
+                }
+            },
+            "required": [
+                "name",
+                "latitude",
+                "longitude"
+            ],
+            "additionalProperties": False
+        }
 
-    def validate(self, recieved_params):
-        """Validate recieved parameters."""
-        # If recieved undefined params
-        for k in recieved_params.keys():
-            if k not in self._attr:
-                msg = 'You post undefined parameter.'
-                raise falcon.HTTPInvalidParam(msg, k)
-
-        # If required parameter doesn't exist
-        required = ['name', 'latitude', 'longitude']
-        for r in required:
-            if r not in recieved_params.keys():
-                raise falcon.HTTPMissingParam(r)
-
-        # If recieved invalid params
-        if len(recieved_params['name']) > 20:
-            msg = 'name must be within 20 characters.'
-            raise falcon.HTTPInvalidParam(msg, 'name')
-        if len(recieved_params['guide']) > 100:
-            msg = 'guide must be within 100 characters.'
-            raise falcon.HTTPInvalidParam(msg, 'guide')
-
+        try:
+            jsonschema.validate(recieved_json, schema)
+        except jsonschema.exceptions.ValidationError:
+            raise falcon.HTTPBadRequest
 
     def on_post(self, req, resp):
         """Create new spot and return its location."""
