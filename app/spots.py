@@ -61,8 +61,9 @@ class AllSpots(Spot):
 
         try:
             jsonschema.validate(recieved_json, schema)
-        except jsonschema.exceptions.ValidationError:
-            raise falcon.HTTPBadRequest
+        except jsonschema.exceptions.ValidationError as err:
+            msg = err.message
+            raise falcon.HTTPBadRequest(description=msg)
 
     def on_post(self, req, resp):
         """Create new spot and return its location."""
