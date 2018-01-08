@@ -5,5 +5,5 @@ six==1.11.0
 py==1.4.34
 pytest==3.2.3
 psycopg2==2.7.3.2
-SQLAlchemy==1.1.14
+SQLAlchemy==1.2.0
 jsonschema==2.6.0
