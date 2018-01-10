@@ -17,7 +17,11 @@ def test_get_all_spots(client):
 def test_post_spot_with_required_params(client):
     """Possible to create new spot with required params."""
     params = json.dumps({"name": "test spot", "latitude": 35.658581, "longitude": 139.745433, "guide": "This is a test."})
-    response = client.simulate_post('/spots', body=params)
+    response = client.simulate_post(
+        '/spots',
+        body=params,
+        headers={'content-type': 'applicatoin/json'}
+    )
     assert response.headers['location'] == '/spots/1'
     assert response.status == falcon.HTTP_CREATED
 
@@ -25,28 +29,44 @@ def test_post_spot_with_required_params(client):
 def test_post_spot_with_missing_params(client):
     """Unable to create new spot because of missing longitude."""
     params = json.dumps({"name": "test spot", "latitude": 35.658581, "guide": "This is a test."})
-    response = client.simulate_post('/spots', body=params)
+    response = client.simulate_post(
+        '/spots',
+        body=params,
+        headers={'content-type': 'applicatoin/json'}
+    )
     assert response.status == falcon.HTTP_BAD_REQUEST
 
 
 def test_post_spot_with_too_long_params(client):
     """Unable to create new spot because name is too long."""
     params = json.dumps({"name": "This name is too long", "latitude": 35.658581, "longitude": 139.745433, "guide": "This is a test."})
-    response = client.simulate_post('/spots', body=params)
+    response = client.simulate_post(
+        '/spots',
+        body=params,
+        headers={'content-type': 'applicatoin/json'}
+    )
     assert response.status == falcon.HTTP_BAD_REQUEST
 
 
 def test_post_spot_with_invalid_type_params(client):
     """Unable to create new spot because name is not string."""
     params = json.dumps({"name": 0.0, "latitude": 35.658581, "longitude": 139.745433, "guide": "This is a test."})
-    response = client.simulate_post('/spots', body=params)
+    response = client.simulate_post(
+        '/spots',
+        body=params,
+        headers={'content-type': 'applicatoin/json'}
+    )
     assert response.status == falcon.HTTP_BAD_REQUEST
 
 
 def test_post_spot_with_undefined_params(client):
     """Unable to create new spot because of undefined params."""
     params = json.dumps({"hoge": "fuga"})
-    response = client.simulate_post('/spots', body=params)
+    response = client.simulate_post(
+        '/spots',
+        body=params,
+        headers={'content-type': 'applicatoin/json'}
+    )
     assert response.status == falcon.HTTP_BAD_REQUEST
 
 
