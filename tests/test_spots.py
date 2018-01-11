@@ -70,6 +70,17 @@ def test_post_spot_with_undefined_params(client):
     assert response.status == falcon.HTTP_BAD_REQUEST
 
 
+def test_post_spot_without_json_params(client):
+    """Unable to create new spot because parameter isn't json."""
+    params = '<h1>This is a test.</h1>'
+    response = client.simulate_post(
+        '/spots',
+        body=params,
+        headers={'content-type': 'text/html'}
+    )
+    assert response.status == falcon.HTTPUnsupportedMediaType
+
+
 def test_get_non_existing_spot(client):
     response = client.simulate_get('/spots/0')
     assert response.status == falcon.HTTP_NOT_FOUND
