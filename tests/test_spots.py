@@ -20,7 +20,7 @@ def test_post_spot_with_required_params(client):
     response = client.simulate_post(
         '/spots',
         body=params,
-        headers={'content-type': 'applicatoin/json'}
+        headers={'content-type': 'application/json'}
     )
     assert response.headers['location'] == '/spots/1'
     assert response.status == falcon.HTTP_CREATED
@@ -32,7 +32,7 @@ def test_post_spot_with_missing_params(client):
     response = client.simulate_post(
         '/spots',
         body=params,
-        headers={'content-type': 'applicatoin/json'}
+        headers={'content-type': 'application/json'}
     )
     assert response.status == falcon.HTTP_BAD_REQUEST
 
@@ -43,7 +43,7 @@ def test_post_spot_with_too_long_params(client):
     response = client.simulate_post(
         '/spots',
         body=params,
-        headers={'content-type': 'applicatoin/json'}
+        headers={'content-type': 'application/json'}
     )
     assert response.status == falcon.HTTP_BAD_REQUEST
 
@@ -54,7 +54,7 @@ def test_post_spot_with_invalid_type_params(client):
     response = client.simulate_post(
         '/spots',
         body=params,
-        headers={'content-type': 'applicatoin/json'}
+        headers={'content-type': 'application/json'}
     )
     assert response.status == falcon.HTTP_BAD_REQUEST
 
@@ -65,7 +65,7 @@ def test_post_spot_with_undefined_params(client):
     response = client.simulate_post(
         '/spots',
         body=params,
-        headers={'content-type': 'applicatoin/json'}
+        headers={'content-type': 'application/json'}
     )
     assert response.status == falcon.HTTP_BAD_REQUEST
 
@@ -78,7 +78,7 @@ def test_post_spot_without_json_params(client):
         body=params,
         headers={'content-type': 'text/html'}
     )
-    assert response.status == falcon.HTTPUnsupportedMediaType
+    assert response.status == falcon.HTTP_UNSUPPORTED_MEDIA_TYPE
 
 
 def test_get_non_existing_spot(client):
