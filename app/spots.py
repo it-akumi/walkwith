@@ -67,6 +67,9 @@ class AllSpots(Spot):
 
     def on_post(self, req, resp):
         """Create new spot and return its location."""
+        if req.get_header('content-type') != 'application/json':
+            raise falcon.HTTPUnsupportedMediaType
+
         recieved_params = json.loads(req.stream.read())
         self.validate(recieved_params)
 
