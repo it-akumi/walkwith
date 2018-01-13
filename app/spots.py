@@ -20,13 +20,10 @@ class AllSpots(Spot):
     def on_get(self, req, resp):
         """Return attributes of all spots in the form of json."""
         all_spots = self._session.query(Spots).all()
-        body = dict()
-        body['spots'] = list(
+        resp.media = {'spots': list(
             {attr: spot.__dict__[attr] for attr in self._attr}
             for spot in all_spots
-        )
-
-        resp.body = json.dumps(body)
+        )}
         resp.content_type = falcon.MEDIA_JSON
         resp.status = falcon.HTTP_OK
 
