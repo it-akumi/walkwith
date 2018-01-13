@@ -2,7 +2,7 @@
 import json
 
 import falcon
-import jsonschema
+from falcon.media.validators import jsonschema
 
 from app.auth import authorize
 from app.db import Spots
@@ -30,50 +30,40 @@ class AllSpots(Spot):
         resp.content_type = falcon.MEDIA_JSON
         resp.status = falcon.HTTP_OK
 
-    def validate(self, recieved_json):
-        """Validate recieved json using jsonschema."""
-        schema = {
-            "properties": {
-                "name": {
-                    "type": "string",
-                    "minLength": 1,
-                    "maxLength": 20
-                },
-                "latitude": {
-                    "type": "number"
-                },
-                "longitude": {
-                    "type": "number"
-                },
-                "guide": {
-                    "type": "string",
-                    "minLength": 1,
-                    "maxLength": 100
-                }
+    schema = {
+        "properties": {
+            "name": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 20
             },
-            "required": [
-                "name",
-                "latitude",
-                "longitude"
-            ],
-            "additionalProperties": False
-        }
+            "latitude": {
+                "type": "number"
+            },
+            "longitude": {
+                "type": "number"
+            },
+            "guide": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 100
+            }
+        },
+        "required": [
+            "name",
+            "latitude",
+            "longitude"
+        ],
+        "additionalProperties": False
+    }
 
-        try:
-            jsonschema.validate(recieved_json, schema)
-        except jsonschema.exceptions.ValidationError as err:
-            msg = err.message
-            raise falcon.HTTPBadRequest(description=msg)
-
+    @jsonschema.validate(schema)
     def on_post(self, req, resp):
         """Create new spot and return its location."""
         if req.get_header('content-type') != 'application/json':
             raise falcon.HTTPUnsupportedMediaType
 
-        recieved_params = json.loads(req.stream.read())
-        self.validate(recieved_params)
-
-        new_spot = Spots(**recieved_params)
+        new_spot = Spots(**req.media)
         self._session.add(new_spot)
         self._session.commit()
 
