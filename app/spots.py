@@ -54,11 +54,14 @@ class AllSpots(Spot):
         "additionalProperties": False
     }
 
+    def is_supported(req, resp, _):
+        if req.get_header('content-type') != 'application/json':
+            raise falcon.HTTPUnsupportedMediaType
+
+    @falcon.before(is_supported)
     @jsonschema.validate(schema)
     def on_post(self, req, resp):
         """Create new spot and return its location."""
-        if req.get_header('content-type') != 'application/json':
-            raise falcon.HTTPUnsupportedMediaType
 
         new_spot = Spots(**req.media)
         self._session.add(new_spot)
