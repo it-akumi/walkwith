@@ -6,8 +6,24 @@ import os
 import falcon
 
 
+# This test must be executed before test_delete_existing_spot
 def test_get_all_spots(client):
-    all_spots = {'spots': []}
+    all_spots = {
+        'spots': [
+            {
+                "name": "test spot for GET",
+                "latitude": 35.658581,
+                "longitude": 139.745433,
+                "guide": "Spot for test_get_existing_spot."
+            },
+            {
+                "name": "test spot for DELETE",
+                "latitude": 46.769692,
+                "longitude": 150.856544,
+                "guide": "Spot for test_delete_existing_spot."
+            }
+        ]
+    }
     response = client.simulate_get('/spots')
     assert response.headers['content-type'] == falcon.MEDIA_JSON
     assert json.loads(response.content) == all_spots
@@ -15,20 +31,29 @@ def test_get_all_spots(client):
 
 
 def test_post_spot_with_required_params(client):
-    """Possible to create new spot with required params."""
-    params = json.dumps({"name": "test spot", "latitude": 35.658581, "longitude": 139.745433, "guide": "This is a test."})
+    """Enable to create new spot with required params."""
+    params = json.dumps({
+        "name": "test spot",
+        "latitude": 35.658581,
+        "longitude": 139.745433,
+        "guide": "This is a test."
+    })
     response = client.simulate_post(
         '/spots',
         body=params,
         headers={'content-type': 'application/json'}
     )
-    assert response.headers['location'] == '/spots/1'
+    assert response.headers['location'] == '/spots/3'
     assert response.status == falcon.HTTP_CREATED
 
 
 def test_post_spot_with_missing_params(client):
     """Unable to create new spot because of missing longitude."""
-    params = json.dumps({"name": "test spot", "latitude": 35.658581, "guide": "This is a test."})
+    params = json.dumps({
+        "name": "test spot",
+        "latitude": 35.658581,
+        "guide": "This is a test."
+    })
     response = client.simulate_post(
         '/spots',
         body=params,
@@ -39,7 +64,12 @@ def test_post_spot_with_missing_params(client):
 
 def test_post_spot_with_too_long_params(client):
     """Unable to create new spot because name is too long."""
-    params = json.dumps({"name": "This name is too long", "latitude": 35.658581, "longitude": 139.745433, "guide": "This is a test."})
+    params = json.dumps({
+        "name": "This name is too long",
+        "latitude": 35.658581,
+        "longitude": 139.745433,
+        "guide": "This is a test."
+    })
     response = client.simulate_post(
         '/spots',
         body=params,
@@ -50,7 +80,12 @@ def test_post_spot_with_too_long_params(client):
 
 def test_post_spot_with_invalid_type_params(client):
     """Unable to create new spot because name is not string."""
-    params = json.dumps({"name": 0.0, "latitude": 35.658581, "longitude": 139.745433, "guide": "This is a test."})
+    params = json.dumps({
+        "name": 0.0,
+        "latitude": 35.658581,
+        "longitude": 139.745433,
+        "guide": "This is a test."
+    })
     response = client.simulate_post(
         '/spots',
         body=params,
@@ -61,7 +96,13 @@ def test_post_spot_with_invalid_type_params(client):
 
 def test_post_spot_with_undefined_params(client):
     """Unable to create new spot because of undefined params."""
-    params = json.dumps({"hoge": "fuga"})
+    params = json.dumps({
+        "name": "test spot",
+        "latitude": 35.658581,
+        "longitude": 139.745433,
+        "guide": "This is a test.",
+        "hoge": "fuga"
+    })
     response = client.simulate_post(
         '/spots',
         body=params,
@@ -88,21 +129,26 @@ def test_get_non_existing_spot(client):
 
 def test_get_existing_spot(client):
     response = client.simulate_get('/spots/1')
-    spot = b'{"name": "test spot", "latitude": 35.658581, "longitude": 139.745433, "guide": "This is a test."}'
+    spot = {
+        "name": "test spot for GET",
+        "latitude": 35.658581,
+        "longitude": 139.745433,
+        "guide": "Spot for test_get_existing_spot."
+    }
     assert response.headers['content-type'] == falcon.MEDIA_JSON
-    assert response.content == spot
+    assert json.loads(response.content) == spot
     assert response.status == falcon.HTTP_OK
 
 
 def test_delete_spot_without_auth(client):
-    response = client.simulate_delete('/spots/1')
+    response = client.simulate_delete('/spots/2')
     assert response.status == falcon.HTTP_UNAUTHORIZED
     # Really means "unauthenticated"
 
 
 def test_delete_spot_with_invalid_token(client):
     response = client.simulate_delete(
-        '/spots/1',
+        '/spots/2',
         headers={'Authorization': 'invalid_token'}
     )
     assert response.status == falcon.HTTP_FORBIDDEN
@@ -111,7 +157,7 @@ def test_delete_spot_with_invalid_token(client):
 
 def test_delete_existing_spot(client):
     response = client.simulate_delete(
-        '/spots/1',
+        '/spots/2',
         headers={'Authorization': os.getenv('AUTH_TOKEN')}
     )
     assert response.status == falcon.HTTP_NO_CONTENT

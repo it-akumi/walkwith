@@ -8,7 +8,7 @@ import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from app.db import Base
+from app.db import Base, Spots
 from app.main import create_api
 
 
@@ -34,6 +34,26 @@ def client(request, database):
     engine = create_engine(database)
     Base.metadata.create_all(bind=engine)
     session = sessionmaker(bind=engine)()
+
+    # create spot for test_get_existing_spot
+    spot = Spots(
+        name="test spot for GET",
+        latitude=35.658581,
+        longitude=139.745433,
+        guide="Spot for test_get_existing_spot."
+    )
+    session.add(spot)
+    session.commit()
+
+    # create spot for test_delete_existing_spot
+    spot = Spots(
+        name="test spot for DELETE",
+        latitude=46.769692,
+        longitude=150.856544,
+        guide="Spot for test_delete_existing_spot."
+    )
+    session.add(spot)
+    session.commit()
 
     def teardown():
         session.close()
